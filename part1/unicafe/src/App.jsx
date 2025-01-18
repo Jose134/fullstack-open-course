@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 const Statistics = ({ good, neutral, bad }) => {
   const getTotal = () => good + neutral + bad;
-  
+
   const getAvg = () => {
     const total = getTotal();
     return total == 0 ? 0 : (good - bad) / getTotal();
@@ -16,14 +16,19 @@ const Statistics = ({ good, neutral, bad }) => {
   return (
     <div>
       <h1>Statistics</h1>
+      {
+        getTotal() == 0
+          ? <p>No feedback given</p>
+          : <>
+            <p>Good {good}</p>
+            <p>Neutral {neutral}</p>
+            <p>Bad {bad}</p>
 
-      <p>Good {good}</p>
-      <p>Neutral {neutral}</p>
-      <p>Bad {bad}</p>
-
-      <p>Total {getTotal()}</p>
-      <p>Average {getAvg()}</p>
-      <p>Positive {getPositive()} %</p>
+            <p>Total {getTotal()}</p>
+            <p>Average {getAvg()}</p>
+            <p>Positive {getPositive()} %</p>
+          </>
+      }
     </div>
   );
 };
