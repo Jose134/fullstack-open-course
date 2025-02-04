@@ -12,9 +12,16 @@ const App = () => {
 
   const handleAddClick = (event) => {
     event.preventDefault();
-    if (newName.trim() !== '') {
+    const name = newName.trim();
+    if (name === '') {
+      alert('Name cannot be empty');
+    }
+    else if (persons.some(person => person.name === name)) {
+      alert(`${name} is already added to phonebook`);
+    }
+    else {
       setNewName('');
-      setPersons(persons.concat({ name: newName }));
+      setPersons(persons.concat({ name: name }));
     }
   }
 
