@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
-
-import axios from 'axios';
+import apiService from './services/apiService';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -12,8 +11,8 @@ const App = () => {
   const [filter, setNewFilter] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons').then(response => {
-      setPersons(response.data);
+    apiService.getAll().then(response => {
+      setPersons(response);
     });
   }, [])
 
@@ -35,9 +34,9 @@ const App = () => {
     else {
       setNewName('');
       setNewNumber('');
-      axios.post('http://localhost:3001/persons', { name: name, number: newNumber })
-        .then(response => {
-          setPersons(persons.concat(response.data));
+      apiService.create({ name, number: newNumber })
+        .then(person => {
+          setPersons(persons.concat(person));
         })
         .catch(error => {
           alert(`Failed to add ${name} to phonebook: ${error}`);
