@@ -35,7 +35,13 @@ const App = () => {
     else {
       setNewName('');
       setNewNumber('');
-      setPersons(persons.concat({ id: persons.length, name: name, number: newNumber }));
+      axios.post('http://localhost:3001/persons', { name: name, number: newNumber })
+        .then(response => {
+          setPersons(persons.concat(response.data));
+        })
+        .catch(error => {
+          alert(`Failed to add ${name} to phonebook: ${error}`);
+        });
     }
   }
 
