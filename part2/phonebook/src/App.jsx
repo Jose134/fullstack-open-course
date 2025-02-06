@@ -20,7 +20,7 @@ const App = () => {
     return (event) => {
       setterMethod(event.target.value);
     }
-  }
+  };
 
   const handleAddClick = (event) => {
     event.preventDefault();
@@ -42,7 +42,20 @@ const App = () => {
           alert(`Failed to add ${name} to phonebook: ${error}`);
         });
     }
-  }
+  };
+
+  const handleDeleteClick = (id) => {
+    const person = persons.find(p => p.id === id);
+    if (window.confirm(`Delete ${person.name}?`)) {
+      apiService.remove(id)
+        .then(() => {
+          setPersons(persons.filter(p => p.id !== id));
+        })
+        .catch(error => {
+          alert(`Failed to delete ${person.name} from phonebook: ${error}`);
+        });
+    }
+  };
 
   const filteredPersons = filter.trim() !== ''
     ? persons.filter(person => person.name.toLowerCase().includes(filter.trim().toLowerCase()))
@@ -59,7 +72,9 @@ const App = () => {
         handleNumberChange={handleFieldChange(setNewNumber)}
         addPerson={handleAddClick} />
       <h2>Numbers</h2>
-      <Persons persons={filteredPersons} />
+      <Persons
+        persons={filteredPersons}
+        deletePerson={handleDeleteClick} />
     </div>
   );
 }
