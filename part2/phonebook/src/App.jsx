@@ -29,19 +29,38 @@ const App = () => {
       alert('Name and number cannot be empty');
     }
     else if (persons.some(person => person.name === name)) {
-      alert(`${name} is already added to phonebook`);
+      const person = persons.find(p => p.name === name);
+      if (person && window.confirm(`${name} is already added to the phonebook, replace the old number with a new one?`)) {
+        doUpdateRequest(person);
+      }
     }
     else {
-      setNewName('');
-      setNewNumber('');
-      apiService.create({ name, number: newNumber })
-        .then(person => {
-          setPersons(persons.concat(person));
-        })
-        .catch(error => {
-          alert(`Failed to add ${name} to phonebook: ${error}`);
-        });
+      doCreateRequest({ name, number: newNumber });
     }
+  };
+
+  const doUpdateRequest = (person) => {
+    setNewName('');
+    setNewNumber('');
+    apiService.update({ ...person, number: newNumber.trim() })
+      .then(updatedPerson => {
+        setPersons(persons.map(p => p.id !== updatedPerson.id ? p : updatedPerson));
+      })
+      .catch(error => {
+        alert(`Failed to update ${name}'s number in phonebook: ${error}`);
+      });
+  };
+
+  const doCreateRequest = (newPerson) => {
+    setNewName('');
+    setNewNumber('');
+    apiService.create(newPerson)
+      .then(person => {
+        setPersons(persons.concat(person));
+      })
+      .catch(error => {
+        alert(`Failed to add ${name} to phonebook: ${error}`);
+      });
   };
 
   const handleDeleteClick = (id) => {
