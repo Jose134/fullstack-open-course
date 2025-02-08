@@ -3,12 +3,15 @@ import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
 import apiService from './services/apiService';
+import Notification from './components/Notification';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [filter, setNewFilter] = useState('');
+  const [notificationMessage, setNotificationMessage] = useState(null);
+  const [notificationType, setNotificationType] = useState('success');
 
   useEffect(() => {
     apiService.getAll().then(response => {
@@ -45,9 +48,11 @@ const App = () => {
     apiService.update({ ...person, number: newNumber.trim() })
       .then(updatedPerson => {
         setPersons(persons.map(p => p.id !== updatedPerson.id ? p : updatedPerson));
+        displayNotification(`Updated ${updatedPerson.name}'s number`, 'success');
       })
       .catch(error => {
-        alert(`Failed to update ${name}'s number in phonebook: ${error}`);
+        displayNotification(`Failed to update ${person.name}'s number`, 'error');
+        console.error(error);
       });
   };
 
@@ -57,9 +62,12 @@ const App = () => {
     apiService.create(newPerson)
       .then(person => {
         setPersons(persons.concat(person));
+        displayNotification(`Added ${person.name}`, 'success');
+        
       })
       .catch(error => {
-        alert(`Failed to add ${name} to phonebook: ${error}`);
+        displayNotification(`Failed to add ${newPerson.name}`, 'error');
+        console.error(error);
       });
   };
 
@@ -69,12 +77,22 @@ const App = () => {
       apiService.remove(id)
         .then(() => {
           setPersons(persons.filter(p => p.id !== id));
+          displayNotification(`Deleted ${person.name}`, 'success');
         })
         .catch(error => {
-          alert(`Failed to delete ${person.name} from phonebook: ${error}`);
+          displayNotification(`Failed to delete ${person.name}`, 'error');
+          console.error(error);
         });
     }
   };
+
+  const displayNotification = (message, type) => {
+    setNotificationMessage(message);
+    setNotificationType(type);
+    setTimeout(() => {
+      setNotificationMessage(null);
+    }, 3000);
+  }
 
   const filteredPersons = filter.trim() !== ''
     ? persons.filter(person => person.name.toLowerCase().includes(filter.trim().toLowerCase()))
@@ -82,6 +100,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={notificationMessage} type={notificationType} />
       <Filter filter={filter} handleFilterChange={handleFieldChange(setNewFilter)} />
       <h2>Add a new</h2>
       <PersonForm
