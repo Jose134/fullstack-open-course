@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Search from './components/Search';
 import CountriesResults from './components/CountriesResults';
+import getAllCountries from './services/countriesService';
 
 const App = () => {
 
@@ -8,11 +9,7 @@ const App = () => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    fetch('https://studies.cs.helsinki.fi/restcountries/api/all')
-      .then(response => response.json())
-      .then(data => {
-        setCountries(data);
-      });
+    getAllCountries.then(data => setCountries(data));
   }, []);
 
   const filteredCountries = countries?.filter(c => c.name.common.toLowerCase().includes(search.toLowerCase()));
